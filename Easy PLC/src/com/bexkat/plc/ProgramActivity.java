@@ -173,7 +173,7 @@ public class ProgramActivity extends SherlockListActivity {
 		case R.id.test_program:
 			break;
 		case R.id.store_move:
-			cmdString = String.format("move: %0.4f %0.4f %0.4f", x, y, z);
+			cmdString = String.format("move: %.4f %.4f %.4f", x, y, z);
 			cmd = mProgramDB.addCommand(program, cmdString);
 			mAdapter.add(cmd);
 			mAdapter.notifyDataSetChanged(); 
