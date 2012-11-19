@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Easy PLC</string>
+    <string name="add_program_label">Add Program</string>
+    <string name="program_name_label">Program Name: </string>
+    <string name="program_description_label">Program Desc: </string>
+    <string name="position_entry_label"><u>Position Entry</u></string>
+    <string name="jog_label">Jog</string>
+    <string name="xneg">X-</string>
+    <string name="xpos">X+</string>
+    <string name="yneg">Y-</string>
+    <string name="ypos">Y+</string>
+    <string name="zneg">Z-</string>
+    <string name="zpos">Z+</string>
+    <string name="x_label">X: </string>
+    <string name="y_label">Y: </string>
+    <string name="z_label">Z: </string>
+    <string name="store_move">Store</string>
+    <string name="test_program">Test</string>
+    <string name="program_list_label"><u>Program Listing</u></string>
+    <string name="relay_air_label">Air</string>
+    <string name="relay_mold_label">Mold</string>
+    <string name="program_add">Add</string>
+    <string name="program_edit">Edit</string>
+    <string name="program_copy">Copy</string>
+    <string name="program_delete">Delete</string>
+    <string name="about">About</string>
+</resources>

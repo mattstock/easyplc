@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="program_actions">
+        <item >Delete</item>
+        <item >Edit</item>
+        <item >Copy</item>
+    </string-array>
+    <string-array name="command_actions">
+        <item>Delete</item>
+    </string-array>
+</resources>
