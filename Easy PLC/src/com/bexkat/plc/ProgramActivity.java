@@ -137,10 +137,12 @@ public class ProgramActivity extends SherlockListActivity {
 	public void onClick(View v) {
 		TextView tv;
 		Command cmd;
-		String cmdString;
 		
 		switch (v.getId()) {
 		case R.id.xpos:
+			// TODO need variable increments
+			// TODO need to work in fractional mm
+			// TODO need to send jog commands to the correct axis (abstract byte compile op?)
 			x += 0.25;
 			tv = (TextView) findViewById(R.id.x_position);
 			tv.setText(Float.toString(x));			
@@ -171,28 +173,26 @@ public class ProgramActivity extends SherlockListActivity {
 			tv.setText(Float.toString(z));			
 			break;
 		case R.id.test_program:
+			// TODO add program execution to the mix
 			break;
 		case R.id.store_move:
-			cmdString = String.format("move: %.4f %.4f %.4f", x, y, z);
-			cmd = mProgramDB.addCommand(program, cmdString);
+			cmd = mProgramDB.addCommand(program, Command.TYPE_POS, x, y, z);
 			mAdapter.add(cmd);
 			mAdapter.notifyDataSetChanged(); 
 			break;
 		case R.id.relay_air:
 			if (((ToggleButton) findViewById(R.id.relay_air)).isChecked())
-				cmdString = "relay_air: on";
+				cmd = mProgramDB.addCommand(program, Command.TYPE_RELAY, 1, Command.RELAY_AIR);
 			else
-				cmdString = "relay_air: off";
-			cmd = mProgramDB.addCommand(program, cmdString);
+				cmd = mProgramDB.addCommand(program, Command.TYPE_RELAY, 0, Command.RELAY_AIR);
 			mAdapter.add(cmd);
 			mAdapter.notifyDataSetChanged();			
 			break;
 		case R.id.relay_mold:
 			if (((ToggleButton) findViewById(R.id.relay_mold)).isChecked())
-				cmdString = "relay_mold: on";
+				cmd = mProgramDB.addCommand(program, Command.TYPE_RELAY, 1, Command.RELAY_MOULD);
 			else
-				cmdString = "relay_mold: off";
-			cmd = mProgramDB.addCommand(program, cmdString);
+				cmd = mProgramDB.addCommand(program, Command.TYPE_RELAY, 0, Command.RELAY_MOULD);
 			mAdapter.add(cmd);
 			mAdapter.notifyDataSetChanged();			
 			break;

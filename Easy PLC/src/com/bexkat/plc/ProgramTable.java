@@ -36,7 +36,9 @@ public class ProgramTable implements BaseColumns {
 	}
 
 	public static void onUpgrade(SQLiteDatabase db, int oldVersion,
-			int newVersion) {			
+			int newVersion) {
+		db.execSQL(DROP_TABLE);
+		db.execSQL(CREATE_TABLE);
 	}
 
 	public ProgramTable(Context context) {
@@ -132,8 +134,16 @@ public class ProgramTable implements BaseColumns {
 		return program;
 	}
 
-	public Command addCommand(Program program, String command) {
-		return cmdDB.createCommand(program.getId(), command);
+	public Command addCommand(Program program, int command, int state, int relay) {
+		return cmdDB.createCommand(program.getId(), command, state, relay);
+	}
+	
+	public Command addCommand(Program program, int command, float x, float y, float z) {
+		return cmdDB.createCommand(program.getId(), command, x, y, z);
+	}
+	
+	public Command addCommand(Program program, int command, int state, int relay, float x, float y, float z) {
+		return cmdDB.createCommand(program.getId(), command, state, relay, x, y, z);
 	}
 
 	public void deleteCommand(Program mProgram, Command command) {

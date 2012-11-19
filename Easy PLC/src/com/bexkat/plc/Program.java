@@ -8,6 +8,7 @@ public class Program {
 	private String name;
 	private String description;
 	private ArrayList<Command> commands;
+	private byte[] compile;
 	
 	public Program() {
 		this.commands = new ArrayList<Command>();
@@ -48,5 +49,23 @@ public class Program {
 	
 	public String toString() {
 		return name + ": " + description;
+	}
+	
+	// TODO need to convert from command to a sequence of byte codes using the step values available
+	public void compile() {
+		ArrayList<Byte> scratch = new ArrayList<Byte>();
+		boolean firstPoint = true;
+		float x,y,z;
+		
+		for (Command c: commands) {
+			switch (c.getCommand()) {
+			case Command.TYPE_POS:
+				if (firstPoint) { // 
+					
+				}
+			}
+		}
+		
+		
 	}
 }
