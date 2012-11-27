@@ -1,13 +1,14 @@
 package com.bexkat.plc;
 
 public class Command {
-	public static final int TYPE_POS = 0; // X, Y, Z expected
-	public static final int TYPE_RELAY = 1; // relayId, state expected
 	public static final int RELAY_AIR = 0;
 	public static final int RELAY_MOULD = 1;
-
+	public static final int TYPE_POS = 0;
+	public static final int TYPE_RELAY = 1;
 	private long id, program;
-	private int command, state, relay;
+	private int command;
+	private int state;
+	private int relay;
 	private float x, y, z;
 
 	public long getId() {
@@ -99,5 +100,5 @@ public class Command {
 		default:
 			return "Invalid command";
 		}
-	}
+	}	
 }

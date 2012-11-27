@@ -151,6 +151,36 @@
         android:textOn="@string/relay_air_label" />
 
     <Button
+        android:id="@+id/init"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_below="@+id/zneg"
+        android:layout_marginTop="30dp"
+        android:layout_toRightOf="@+id/store_move"
+        android:onClick="onClick"
+        android:text="Init" />
+
+ 	<Button
+        android:id="@+id/home"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_below="@+id/zneg"
+        android:layout_marginTop="30dp"
+        android:layout_toLeftOf="@+id/store_move"
+        android:onClick="onClick"
+        android:text="Home" />
+    
+    <Button
+        android:id="@+id/reset"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_below="@+id/store_move"
+        android:layout_marginTop="30dp"
+        android:layout_toRightOf="@+id/relay_air"
+        android:onClick="onClick"
+        android:text="Reset" />
+
+    	<Button
         android:id="@+id/store_move"
         android:layout_width="75dp"
         android:layout_height="75dp"
@@ -159,7 +189,7 @@
         android:layout_toRightOf="@+id/relay_air"
         android:onClick="onClick"
         android:text="@string/store_move" />
-
+    
     <ToggleButton
         android:id="@+id/relay_mold"
         android:layout_width="75dp"

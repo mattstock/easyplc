@@ -2,16 +2,22 @@ package com.bexkat.plc;
 
 import java.util.List;
 
-import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.bexkat.plc.USBAccessory.USBAccessoryService;
+import com.bexkat.plc.USBAccessory.USBAccessoryService.PLCBinder;
+import com.bexkat.plc.compiler.ByteCompiler;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,6 +27,9 @@ import android.widget.ToggleButton;
 import android.widget.AdapterView.OnItemLongClickListener;
 
 public class ProgramActivity extends SherlockListActivity {
+	private static final float STEPVAL = 5.0f;
+	private USBAccessoryService plc;
+	private ServiceConnection connection = new PLCServiceConnection();
 	private ProgramTable mProgramDB;
 	private ArrayAdapter<Command> mAdapter;
 	private Command selectedCommand;
@@ -98,6 +107,8 @@ public class ProgramActivity extends SherlockListActivity {
 		mAdapter = new ArrayAdapter<Command>(this,
 				android.R.layout.simple_list_item_1, commands);
 		setListAdapter(mAdapter);
+		bindService(new Intent(getApplicationContext(), USBAccessoryService.class), connection,
+				Context.BIND_AUTO_CREATE);
 	}
 	
     @Override
@@ -133,47 +144,77 @@ public class ProgramActivity extends SherlockListActivity {
 
 		super.onPause();
 	}
+
+	@Override
+	protected void onDestroy() {
+		unbindService(connection);
+		super.onDestroy();
+	}
+
+	private class PLCServiceConnection implements ServiceConnection {
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			PLCBinder binder = (PLCBinder) service;
+			plc = binder.getService();
+		}
+
+		public void onServiceDisconnected(ComponentName className) {
+			plc = null;
+		}
+	}
 	
 	public void onClick(View v) {
 		TextView tv;
 		Command cmd;
 		
 		switch (v.getId()) {
+		case R.id.home:
+			plc.home();
+			break;
+		case R.id.init:
+			plc.init();
+			break;
+		case R.id.reset:
+			plc.reset();
+			break;
 		case R.id.xpos:
 			// TODO need variable increments
-			// TODO need to work in fractional mm
-			// TODO need to send jog commands to the correct axis (abstract byte compile op?)
-			x += 0.25;
+			x += STEPVAL;
+			plc.move(ByteCompiler.moveStep(ByteCompiler.MASK_X, STEPVAL));
 			tv = (TextView) findViewById(R.id.x_position);
 			tv.setText(Float.toString(x));			
 			break;
 		case R.id.xneg:
-			x -= 0.25;
+			x -= STEPVAL;
+			plc.move(ByteCompiler.moveStep(ByteCompiler.MASK_X, -STEPVAL));
 			tv = (TextView) findViewById(R.id.x_position);
-			tv.setText(Float.toString(x));			
+			tv.setText(Float.toString(x));
 			break;
 		case R.id.ypos:
-			y += 0.25;
+			y += STEPVAL;
+			plc.move(ByteCompiler.moveStep(ByteCompiler.MASK_X, STEPVAL));
 			tv = (TextView) findViewById(R.id.y_position);
 			tv.setText(Float.toString(y));			
 			break;
 		case R.id.yneg:
-			y -= 0.25;
+			y -= STEPVAL;
+			plc.move(ByteCompiler.moveStep(ByteCompiler.MASK_X, -STEPVAL));
 			tv = (TextView) findViewById(R.id.y_position);
 			tv.setText(Float.toString(y));			
 			break;
 		case R.id.zpos:
-			z += 0.25;
+			z += STEPVAL;
+			plc.move(ByteCompiler.moveStep(ByteCompiler.MASK_X, STEPVAL));
 			tv = (TextView) findViewById(R.id.z_position);
 			tv.setText(Float.toString(z));			
 			break;
 		case R.id.zneg:
-			z -= 0.25;
+			z -= STEPVAL;
+			plc.move(ByteCompiler.moveStep(ByteCompiler.MASK_X, -STEPVAL));
 			tv = (TextView) findViewById(R.id.z_position);
 			tv.setText(Float.toString(z));			
 			break;
 		case R.id.test_program:
-			// TODO add program execution to the mix
+			plc.download(ByteCompiler.compile(program.getCommands()));
 			break;
 		case R.id.store_move:
 			cmd = mProgramDB.addCommand(program, Command.TYPE_POS, x, y, z);
@@ -181,18 +222,24 @@ public class ProgramActivity extends SherlockListActivity {
 			mAdapter.notifyDataSetChanged(); 
 			break;
 		case R.id.relay_air:
-			if (((ToggleButton) findViewById(R.id.relay_air)).isChecked())
+			if (((ToggleButton) findViewById(R.id.relay_air)).isChecked()) {
+				plc.relay(ByteCompiler.relayByte(1, Command.RELAY_AIR));				
 				cmd = mProgramDB.addCommand(program, Command.TYPE_RELAY, 1, Command.RELAY_AIR);
-			else
+			} else {
+				plc.relay(ByteCompiler.relayByte(0, Command.RELAY_AIR));				
 				cmd = mProgramDB.addCommand(program, Command.TYPE_RELAY, 0, Command.RELAY_AIR);
+			}
 			mAdapter.add(cmd);
 			mAdapter.notifyDataSetChanged();			
 			break;
 		case R.id.relay_mold:
-			if (((ToggleButton) findViewById(R.id.relay_mold)).isChecked())
+			if (((ToggleButton) findViewById(R.id.relay_mold)).isChecked()) {
+				plc.relay(ByteCompiler.relayByte(1, Command.RELAY_MOULD));				
 				cmd = mProgramDB.addCommand(program, Command.TYPE_RELAY, 1, Command.RELAY_MOULD);
-			else
+			} else {
+				plc.relay(ByteCompiler.relayByte(0, Command.RELAY_MOULD));				
 				cmd = mProgramDB.addCommand(program, Command.TYPE_RELAY, 0, Command.RELAY_MOULD);
+			}
 			mAdapter.add(cmd);
 			mAdapter.notifyDataSetChanged();			
 			break;
