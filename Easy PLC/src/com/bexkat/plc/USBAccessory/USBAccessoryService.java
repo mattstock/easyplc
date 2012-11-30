@@ -51,6 +51,7 @@ public class USBAccessoryService extends Service {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		messenger.cancel(true);
 		unregisterReceiver(mUsbReceiver);
 		Log.d(TAG, "USB service onDestroy()");
 	}
@@ -92,6 +93,7 @@ public class USBAccessoryService extends Service {
 						.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
 				if (accessory != null && accessory.equals(mAccessory)) {
 					Log.i(TAG, "closing accessory");
+					messenger.cancel(true);
 				}
 			}
 		}
@@ -165,7 +167,6 @@ public class USBAccessoryService extends Service {
 						break;
 					case HOME:
 						os.write('h');
-						os.write(cmd.getData());
 						res = is.read(buffer, 0, buffer.length);
 						break;
 					case MOVE:
