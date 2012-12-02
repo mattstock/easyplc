@@ -116,6 +116,7 @@ public class ProgramActivity extends SherlockListActivity {
         super.onResume();
         
 		mProgramDB.open();
+		program = mProgramDB.getProgram(progid);
 		
 		// Bunch of UI updates
 		EditText v = (EditText) findViewById(R.id.program_name);
@@ -191,30 +192,30 @@ public class ProgramActivity extends SherlockListActivity {
 			break;
 		case R.id.ypos:
 			y += STEPVAL;
-			plc.move(ByteCompiler.moveStep(ByteCompiler.MASK_X, STEPVAL));
+			plc.move(ByteCompiler.moveStep(ByteCompiler.MASK_Y, STEPVAL));
 			tv = (TextView) findViewById(R.id.y_position);
 			tv.setText(Float.toString(y));			
 			break;
 		case R.id.yneg:
 			y -= STEPVAL;
-			plc.move(ByteCompiler.moveStep(ByteCompiler.MASK_X, -STEPVAL));
+			plc.move(ByteCompiler.moveStep(ByteCompiler.MASK_Y, -STEPVAL));
 			tv = (TextView) findViewById(R.id.y_position);
 			tv.setText(Float.toString(y));			
 			break;
 		case R.id.zpos:
 			z += STEPVAL;
-			plc.move(ByteCompiler.moveStep(ByteCompiler.MASK_X, STEPVAL));
+			plc.move(ByteCompiler.moveStep(ByteCompiler.MASK_Z, STEPVAL));
 			tv = (TextView) findViewById(R.id.z_position);
 			tv.setText(Float.toString(z));			
 			break;
 		case R.id.zneg:
 			z -= STEPVAL;
-			plc.move(ByteCompiler.moveStep(ByteCompiler.MASK_X, -STEPVAL));
+			plc.move(ByteCompiler.moveStep(ByteCompiler.MASK_Z, -STEPVAL));
 			tv = (TextView) findViewById(R.id.z_position);
 			tv.setText(Float.toString(z));			
 			break;
 		case R.id.test_program:
-			plc.download(ByteCompiler.compile(program.getCommands()));
+			plc.move(ByteCompiler.compile(mProgramDB.getAllCommands(program)));
 			break;
 		case R.id.store_move:
 			cmd = mProgramDB.addCommand(program, Command.TYPE_POS, x, y, z);

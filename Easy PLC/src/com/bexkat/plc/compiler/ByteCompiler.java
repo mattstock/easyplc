@@ -27,11 +27,12 @@ public class ByteCompiler {
 		stepSeq.add(new MoveResult(MASK_Y, 0));
 		stepSeq.add(new MoveResult(MASK_Z, 0));
 		for (Command c: cmds) {
+			Log.d(TAG, c.toString());
 			switch (c.getCommand()) {
 			case Command.TYPE_POS:
-				stepSeq.addAll(generateSteps(MASK_X, c.getZ()-z));
+				stepSeq.addAll(generateSteps(MASK_Z, c.getZ()-z));
 				stepSeq.addAll(generateSteps(MASK_Y, c.getY()-y));
-				stepSeq.addAll(generateSteps(MASK_Z, c.getX()-x));
+				stepSeq.addAll(generateSteps(MASK_X, c.getX()-x));
 				x = c.getX();
 				y = c.getY();
 				z = c.getZ();
@@ -56,7 +57,20 @@ public class ByteCompiler {
 	}
 	
 	private static MoveResult generateRelay(int state, int relay) {
-		return new MoveResult((byte) (MASK_RELAY|((state & 0x01) << 5)), relay);
+		Log.d(TAG, "generateRelay("+state+","+relay+")");
+		if (relay == Command.RELAY_AIR) {
+			if (state == 1)
+				return new MoveResult(MASK_RELAY, 0);
+			else
+				return new MoveResult(MASK_RELAY, 1);
+		}
+		if (relay == Command.RELAY_MOULD) {
+			if (state == 1)
+				return new MoveResult(MASK_RELAY, 2);
+			else
+				return new MoveResult(MASK_RELAY, 3);			
+		}
+		return new MoveResult(MASK_RELAY, 1); // kind of a nop
 	}
 	
 	// A little tail recursion

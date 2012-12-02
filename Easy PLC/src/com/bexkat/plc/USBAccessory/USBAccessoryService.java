@@ -44,10 +44,16 @@ public class USBAccessoryService extends Service {
 		IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
 		filter.addAction(UsbManager.ACTION_USB_ACCESSORY_DETACHED);
 		registerReceiver(mUsbReceiver, filter);
-		messenger = new MessagingTask();
-		messenger.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		startMessenger();
 	}
 
+	private void startMessenger() {
+		if (messenger != null && messenger.getStatus() == AsyncTask.Status.RUNNING)
+			return;
+		messenger = new MessagingTask();
+		messenger.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);					
+	}
+	
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
@@ -57,30 +63,37 @@ public class USBAccessoryService extends Service {
 	}
 
 	public void init() {
+		startMessenger();
 		queue.add(new AccessoryCommand(AccessoryCommandType.INIT));
 	}
 
 	public void home() {
+		startMessenger();
 		queue.add(new AccessoryCommand(AccessoryCommandType.HOME));
 	}
 
 	public void reset() {
+		startMessenger();
 		queue.add(new AccessoryCommand(AccessoryCommandType.ALARM_RESET));
 	}
 
 	public void status() {
+		startMessenger();
 		queue.add(new AccessoryCommand(AccessoryCommandType.STATUS));
 	}
 
 	public void move(List<MoveResult> data) {
+		startMessenger();
 		queue.add(new AccessoryCommand(AccessoryCommandType.MOVE, data));
 	}
 
 	public void relay(byte data) {
-		queue.add(new AccessoryCommand(AccessoryCommandType.RELAY, data));
+		startMessenger();
+		queue.add(new AccessoryCommand(AccessoryCommandType.MOVE, data));
 	}
 
 	public void download(List<MoveResult> data) {
+		startMessenger();
 		queue.add(new AccessoryCommand(AccessoryCommandType.DOWNLOAD, data));
 	}
 
@@ -134,10 +147,12 @@ public class USBAccessoryService extends Service {
 					os = new FileOutputStream(fd);
 				} else {
 					Log.d(TAG, "FD for accessory not valid!");
+					stopped = true;
 					return;
 				}
 			} else {
 				Log.d(TAG, "openAccessory failed!");
+				stopped = true;
 				return;
 			}
 		}
@@ -149,16 +164,11 @@ public class USBAccessoryService extends Service {
 
 			try {
 				Log.d(TAG, "Starting read loop");
-				while (!isCancelled() || stopped) {
+				while (!(isCancelled() || stopped)) {
 					AccessoryCommand cmd = queue.take();
 					switch (cmd.getType()) {
 					case INIT:
 						os.write('i');
-						res = is.read(buffer, 0, buffer.length);
-						break;
-					case RELAY:
-						os.write('a');
-						os.write(cmd.getData());
 						res = is.read(buffer, 0, buffer.length);
 						break;
 					case ALARM_RESET:
@@ -170,8 +180,8 @@ public class USBAccessoryService extends Service {
 						res = is.read(buffer, 0, buffer.length);
 						break;
 					case MOVE:
-						os.write('c');
 						for (byte s: cmd.getData()) {
+							os.write('c');
 							os.write(s);
 							res = is.read(buffer, 0, buffer.length);
 							if (res < 0 || buffer[0] != 'K')
