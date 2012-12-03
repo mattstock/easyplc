@@ -1,24 +1,28 @@
 package com.bexkat.plc.USBAccessory;
 
 public class AccessoryResult {
-	private AccessoryCommandType type;
-	private boolean success;
+	private int position;
+	private int axis;
 	
-	public AccessoryResult(AccessoryCommandType type, boolean success) {
-		this.type = type;
-		this.success = success;
+	public AccessoryResult(byte[] res) {
+		axis = res[0];
+		
+		position = 0;
+		for (int i=1; i < 5; i++) {
+			position = position << 8;
+			position = position | (res[i] & 0xff);
+		}
+	}
+
+	public int getAxis() {
+		return axis;
 	}
 	
-	public AccessoryCommandType getType() {
-		return type;
+	public int getPosition() {
+		return position;
 	}
-	public void setType(AccessoryCommandType type) {
-		this.type = type;
-	}
-	public boolean isSuccess() {
-		return success;
-	}
-	public void setSuccess(boolean success) {
-		this.success = success;
+	
+	public void setPosition(int position) {
+		this.position = position;
 	}
 }

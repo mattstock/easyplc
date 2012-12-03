@@ -4,7 +4,6 @@ import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -20,6 +19,7 @@ import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
@@ -31,8 +31,11 @@ public class USBAccessoryService extends Service {
 	private UsbAccessory mAccessory;
 	private final IBinder mBinder = new PLCBinder();
 	private static final String ACTION_USB_PERMISSION = "com.bexkat.plc.action.USB_PERMISSION";
+	public static final String POSITION_INTENT = "com.bexkat.plc.position";
 	private static final BlockingQueue<AccessoryCommand> queue = new LinkedBlockingQueue<AccessoryCommand>();
-	protected MessagingTask messenger;
+	protected ListenerTask listener;
+	protected WriterTask writer;
+	private ParcelFileDescriptor pfd;
 
 	@Override
 	public void onCreate() {
@@ -48,16 +51,39 @@ public class USBAccessoryService extends Service {
 	}
 
 	private void startMessenger() {
-		if (messenger != null && messenger.getStatus() == AsyncTask.Status.RUNNING)
-			return;
-		messenger = new MessagingTask();
-		messenger.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);					
+		FileDescriptor fd;
+
+		if (pfd == null) {
+			UsbAccessory[] accessories = mUSBManager.getAccessoryList();
+			mAccessory = (accessories == null ? null : accessories[0]);
+			if (mAccessory == null)
+				return;
+			if ((pfd = mUSBManager.openAccessory(mAccessory)) == null) {
+				Log.d(TAG, "openAccessory failed!");
+				return;
+			}
+			fd = pfd.getFileDescriptor();
+			if (!fd.valid()) {
+				Log.d(TAG, "FD for accessory not valid!");
+				return;
+			}
+			if (listener != null)
+				listener.cancel(true);
+			listener = new ListenerTask();
+			listener.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
+					new FileInputStream(fd));
+			if (writer != null)
+				writer.cancel(true);
+			writer = new WriterTask();
+			writer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
+					new FileOutputStream(fd));
+		}
 	}
-	
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		messenger.cancel(true);
+		listener.cancel(true);
 		unregisterReceiver(mUsbReceiver);
 		Log.d(TAG, "USB service onDestroy()");
 	}
@@ -77,9 +103,9 @@ public class USBAccessoryService extends Service {
 		queue.add(new AccessoryCommand(AccessoryCommandType.ALARM_RESET));
 	}
 
-	public void status() {
+	public void relay(byte cmd) {
 		startMessenger();
-		queue.add(new AccessoryCommand(AccessoryCommandType.STATUS));
+		queue.add(new AccessoryCommand(AccessoryCommandType.RELAY, cmd));
 	}
 
 	public void move(List<MoveResult> data) {
@@ -87,14 +113,9 @@ public class USBAccessoryService extends Service {
 		queue.add(new AccessoryCommand(AccessoryCommandType.MOVE, data));
 	}
 
-	public void relay(byte data) {
-		startMessenger();
-		queue.add(new AccessoryCommand(AccessoryCommandType.MOVE, data));
-	}
-
 	public void download(List<MoveResult> data) {
 		startMessenger();
-		queue.add(new AccessoryCommand(AccessoryCommandType.DOWNLOAD, data));
+		// TODO
 	}
 
 	private class UsbReceiver extends BroadcastReceiver {
@@ -106,7 +127,14 @@ public class USBAccessoryService extends Service {
 						.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
 				if (accessory != null && accessory.equals(mAccessory)) {
 					Log.i(TAG, "closing accessory");
-					messenger.cancel(true);
+					listener.cancel(true);
+					try {
+						pfd.close();
+						pfd = null;
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
 				}
 			}
 		}
@@ -123,74 +151,105 @@ public class USBAccessoryService extends Service {
 		}
 	}
 
-	// This thread pulls messages off the the send queue, and based on the
-	// type, waits for a response in a synchronous manner.
-	protected class MessagingTask extends
-			AsyncTask<InputStream, AccessoryResult, Void> {
-		private FileInputStream is;
-		private FileOutputStream os;
-		private ParcelFileDescriptor pfd;
-		boolean stopped = false;
+	protected class ListenerTask extends
+			AsyncTask<FileInputStream, AccessoryResult, Void> {
+		FileInputStream is;
 
 		@Override
-		protected void onPreExecute() {
-			UsbAccessory[] accessories = mUSBManager.getAccessoryList();
-			mAccessory = (accessories == null ? null : accessories[0]);
-			if (mAccessory == null) {
-				stopped = true;
-				return;
-			}
-			if ((pfd = mUSBManager.openAccessory(mAccessory)) != null) {
-				FileDescriptor fd = pfd.getFileDescriptor();
-				if (fd.valid()) {
-					is = new FileInputStream(fd);
-					os = new FileOutputStream(fd);
-				} else {
-					Log.d(TAG, "FD for accessory not valid!");
-					stopped = true;
-					return;
+		protected Void doInBackground(FileInputStream... params) {
+			byte[] buffer = new byte[64];
+			int res = 0;
+			int index = 0;
+			is = params[0];
+
+			Log.d(TAG, "Starting read loop");
+			try {
+				while (!isCancelled()) {
+					res = is.read(buffer, index, buffer.length);
+					if (res < 0)
+						break;
+					index = index + res;
+					if (index == 5) {
+						publishProgress(new AccessoryResult(buffer));
+						index = 0;
+					}
 				}
-			} else {
-				Log.d(TAG, "openAccessory failed!");
-				stopped = true;
-				return;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onProgressUpdate(AccessoryResult... values) {
+			Bundle b = new Bundle();
+			Intent i;
+
+			if (values.length > 0) {
+				b.putInt("axis", values[0].getAxis());
+				b.putInt("position", values[0].getPosition());
+				i = new Intent(POSITION_INTENT);
+				i.putExtras(b);
+				sendBroadcast(i, null);
 			}
 		}
 
 		@Override
-		protected Void doInBackground(InputStream... params) {
-			byte[] buffer = new byte[64];
-			int res = 0;
-
+		protected void onCancelled() {
+			Log.i(TAG, "ListenerTask cancelled");
 			try {
-				Log.d(TAG, "Starting read loop");
-				while (!(isCancelled() || stopped)) {
+				if (is != null)
+					is.close();
+			} catch (IOException e) {
+				Log.e(TAG, "Close: " + e.getMessage());
+			}
+			is = null;
+		}
+	}
+
+	// This thread pulls messages off the the send queue, and based on the
+	// type, waits for a response in a synchronous manner.
+	protected class WriterTask extends
+			AsyncTask<FileOutputStream, AccessoryResult, Void> {
+		private FileOutputStream os;
+
+		@Override
+		protected Void doInBackground(FileOutputStream... params) {
+			int res = 0;
+			FileOutputStream os = params[0];
+			try {
+				Log.d(TAG, "Starting write loop");
+				while (!isCancelled()) {
 					AccessoryCommand cmd = queue.take();
 					switch (cmd.getType()) {
 					case INIT:
 						os.write('i');
-						res = is.read(buffer, 0, buffer.length);
+						os.write('0');
+						os.write('i');
+						os.write('1');
+						os.write('i');
+						os.write('2');
+						break;
+					case RELAY:
+						os.write('c');
+						os.write(cmd.getData());
 						break;
 					case ALARM_RESET:
 						os.write('r');
-						res = is.read(buffer, 0, buffer.length);
 						break;
 					case HOME:
 						os.write('h');
-						res = is.read(buffer, 0, buffer.length);
+						os.write('0');
+						os.write('h');
+						os.write('1');
+						os.write('h');
+						os.write('2');
 						break;
 					case MOVE:
-						for (byte s: cmd.getData()) {
+						for (byte s : cmd.getData()) {
 							os.write('c');
 							os.write(s);
-							res = is.read(buffer, 0, buffer.length);
-							if (res < 0 || buffer[0] != 'K')
-								break;
 						}
-						break;
-					case STATUS:
-						os.write('s');
-						res = is.read(buffer, 0, buffer.length);
 						break;
 					default:
 						res = 0;
@@ -201,7 +260,7 @@ public class USBAccessoryService extends Service {
 					}
 				}
 			} catch (IOException e) {
-				Log.e(TAG, "listener read: " + e.getMessage());
+				Log.e(TAG, "WriterTask: " + e.getMessage());
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -209,40 +268,15 @@ public class USBAccessoryService extends Service {
 		}
 
 		@Override
-		protected void onProgressUpdate(AccessoryResult... values) {
-			if (values.length > 0) {
-				switch (values[0].getType()) {
-				case INIT:
-				case RELAY:
-				case MOVE:
-				case STATUS:
-				case ALARM_RESET:
-				case HOME:
-				case DOWNLOAD:
-				}
-			}
-		}
-
-		@Override
 		protected void onCancelled() {
-			Log.i(TAG, "ListenerTask cancelled");
+			Log.i(TAG, "WriterTask cancelled");
 			try {
-				if (is != null)
-					is.close();
 				if (os != null)
 					os.close();
 			} catch (IOException e) {
 				Log.e(TAG, "Close: " + e.getMessage());
 			}
-			is = null;
 			os = null;
-
-			if (pfd != null) {
-				try {
-					pfd.close();
-				} catch (IOException e) {
-				}
-			}
 		}
 	}
 }

@@ -12,9 +12,11 @@ import com.bexkat.plc.USBAccessory.USBAccessoryService.PLCBinder;
 import com.bexkat.plc.compiler.ByteCompiler;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -37,6 +39,7 @@ public class ProgramActivity extends SherlockListActivity {
 	private ActionMode mActionMode;
 	private long progid;
 	private float x,y,z = 0;
+	private BroadcastReceiver intentReceiver;
 	private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
 
 		@Override
@@ -118,6 +121,11 @@ public class ProgramActivity extends SherlockListActivity {
 		mProgramDB.open();
 		program = mProgramDB.getProgram(progid);
 		
+		IntentFilter updateFilter = new IntentFilter();
+		updateFilter.addAction(USBAccessoryService.POSITION_INTENT);
+		intentReceiver = new AccessoryServiceReceiver();
+		registerReceiver(intentReceiver, updateFilter);
+		
 		// Bunch of UI updates
 		EditText v = (EditText) findViewById(R.id.program_name);
 		v.setText(program.getName());
@@ -140,6 +148,8 @@ public class ProgramActivity extends SherlockListActivity {
 		v = (TextView) findViewById(R.id.program_description);		
 		program.setDescription(v.getText().toString());
 		mProgramDB.modifyDescription(program);
+		
+		unregisterReceiver(intentReceiver);
 		
 		mProgramDB.close();
 
@@ -181,38 +191,26 @@ public class ProgramActivity extends SherlockListActivity {
 			// TODO need variable increments
 			x += STEPVAL;
 			plc.move(ByteCompiler.moveStep(ByteCompiler.MASK_X, STEPVAL));
-			tv = (TextView) findViewById(R.id.x_position);
-			tv.setText(Float.toString(x));			
 			break;
 		case R.id.xneg:
 			x -= STEPVAL;
 			plc.move(ByteCompiler.moveStep(ByteCompiler.MASK_X, -STEPVAL));
-			tv = (TextView) findViewById(R.id.x_position);
-			tv.setText(Float.toString(x));
 			break;
 		case R.id.ypos:
 			y += STEPVAL;
 			plc.move(ByteCompiler.moveStep(ByteCompiler.MASK_Y, STEPVAL));
-			tv = (TextView) findViewById(R.id.y_position);
-			tv.setText(Float.toString(y));			
 			break;
 		case R.id.yneg:
 			y -= STEPVAL;
 			plc.move(ByteCompiler.moveStep(ByteCompiler.MASK_Y, -STEPVAL));
-			tv = (TextView) findViewById(R.id.y_position);
-			tv.setText(Float.toString(y));			
 			break;
 		case R.id.zpos:
 			z += STEPVAL;
 			plc.move(ByteCompiler.moveStep(ByteCompiler.MASK_Z, STEPVAL));
-			tv = (TextView) findViewById(R.id.z_position);
-			tv.setText(Float.toString(z));			
 			break;
 		case R.id.zneg:
 			z -= STEPVAL;
 			plc.move(ByteCompiler.moveStep(ByteCompiler.MASK_Z, -STEPVAL));
-			tv = (TextView) findViewById(R.id.z_position);
-			tv.setText(Float.toString(z));			
 			break;
 		case R.id.test_program:
 			plc.move(ByteCompiler.compile(mProgramDB.getAllCommands(program)));
@@ -244,6 +242,40 @@ public class ProgramActivity extends SherlockListActivity {
 			mAdapter.add(cmd);
 			mAdapter.notifyDataSetChanged();			
 			break;
+		}
+	}
+	
+	private class AccessoryServiceReceiver extends BroadcastReceiver {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			EditText v;
+			
+			Bundle b = intent.getExtras();
+			String action = intent.getAction();
+			
+			if (action.equals(USBAccessoryService.POSITION_INTENT)) {
+				switch (b.getInt("axis")) {
+				case 0:
+					x = b.getInt("position") / 100.0f;
+					v = (EditText) findViewById(R.id.x_position);
+					v.setText(Float.toString(x));
+					break;
+				case 1:
+					y = b.getInt("position") / 100.0f;
+					v = (EditText) findViewById(R.id.y_position);
+					v.setText(Float.toString(y));
+					break;
+				case 2:
+					z = b.getInt("position") / 100.0f;
+					v = (EditText) findViewById(R.id.z_position);
+					v.setText(Float.toString(z));
+					break;
+				default:
+					// TODO - add relay support
+					break;
+				}
+			}
 		}
 	}
 }
