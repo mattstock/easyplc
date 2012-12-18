@@ -1,0 +1,426 @@
+# EESchema Netlist Version 1.1 created  12/16/2012 9:31:31 PM
+(
+ ( /50CDE71E SIL-4 D1 RGB_LED
+  ( 1 N-000086 )
+  ( 2 GND )
+  ( 3 N-000091 )
+  ( 4 N-000085 )
+ )
+ ( /50CA3531 PIN_ARRAY_5x2 P1 RELAYS
+  ( 1 GND )
+  ( 2 +24V )
+  ( 3 GND )
+  ( 4 N-000051 )
+  ( 5 GND )
+  ( 6 N-000054 )
+  ( 7 GND )
+  ( 8 N-000049 )
+  ( 9 GND )
+  ( 10 N-000079 )
+ )
+ ( /50CA3541 pin_array_4x2 P2 STOPSW
+  ( 1 GND )
+  ( 2 DIG24 )
+  ( 3 GND )
+  ( 4 DIG26 )
+  ( 5 GND )
+  ( 6 DIG28 )
+  ( 7 GND )
+  ( 8 DIG30 )
+ )
+ ( /50CCBF27 pin_array_3x2 P3 RS485
+  ( 1 +5V )
+  ( 2 N-000024 )
+  ( 3 N-000024 )
+  ( 4 N-000028 )
+  ( 5 N-000029 )
+  ( 6 N-000030 )
+ )
+ ( /50CBEFC0 SIL-3 P4 MODBUS
+  ( 1 N-000024 )
+  ( 2 N-000083 )
+  ( 3 GND )
+ )
+ ( /50CCBAA3 SIL-8 P5 PWM_L
+  ( 1 ? )
+  ( 2 ? )
+  ( 3 ? )
+  ( 4 ? )
+  ( 5 ? )
+  ( 6 ? )
+  ( 7 ? )
+  ( 8 ? )
+ )
+ ( /50CCBAA8 SIL-8 P6 PWM_H
+  ( 1 PWM8 )
+  ( 2 PWM9 )
+  ( 3 PWM10 )
+  ( 4 ? )
+  ( 5 ? )
+  ( 6 ? )
+  ( 7 GND )
+  ( 8 ? )
+ )
+ ( /50CBF015 pin_array_9x2 P7 DIGITAL
+  ( 1 +5V )
+  ( 2 +5V )
+  ( 3 DIG22 )
+  ( 4 /DIG23 )
+  ( 5 DIG24 )
+  ( 6 ? )
+  ( 7 DIG26 )
+  ( 8 ? )
+  ( 9 DIG28 )
+  ( 10 ? )
+  ( 11 DIG30 )
+  ( 12 ? )
+  ( 13 DIG32 )
+  ( 14 ? )
+  ( 15 DIG34 )
+  ( 16 ? )
+  ( 17 DIG36 )
+  ( 18 ? )
+ )
+ ( /50CBF01B pin_array_9x2 P8 DIGITAL
+  ( 1 DIG38 )
+  ( 2 ? )
+  ( 3 DIG40 )
+  ( 4 ? )
+  ( 5 ? )
+  ( 6 ? )
+  ( 7 ? )
+  ( 8 ? )
+  ( 9 ? )
+  ( 10 ? )
+  ( 11 ? )
+  ( 12 ? )
+  ( 13 /DIG50 )
+  ( 14 /DIG51 )
+  ( 15 /DIG52 )
+  ( 16 ? )
+  ( 17 GND )
+  ( 18 GND )
+ )
+ ( /50CBF2A9 SIL-6 P9 POWER
+  ( 1 RST )
+  ( 2 +3.3V )
+  ( 3 +5V )
+  ( 4 GND )
+  ( 5 GND )
+  ( 6 ? )
+ )
+ ( /50CBEFFB SIL-8 P10 COMMS
+  ( 1 ? )
+  ( 2 ? )
+  ( 3 RX1_D19 )
+  ( 4 TX1_D18 )
+  ( 5 ? )
+  ( 6 ? )
+  ( 7 ? )
+  ( 8 ? )
+ )
+ ( /50CCCC7F SIL-8 P11 ADC_L
+  ( 1 ? )
+  ( 2 ? )
+  ( 3 ? )
+  ( 4 ? )
+  ( 5 ? )
+  ( 6 ? )
+  ( 7 ? )
+  ( 8 ? )
+ )
+ ( /50CCCC84 SIL-8 P12 ADC_H
+  ( 1 ? )
+  ( 2 ? )
+  ( 3 ? )
+  ( 4 ? )
+  ( 5 ? )
+  ( 6 ? )
+  ( 7 ? )
+  ( 8 ? )
+ )
+ ( /50CCD7F1 PIN_ARRAY_2X1 P13 Reset
+  ( 1 GND )
+  ( 2 RST )
+ )
+ ( /50CCE1C0 SIL-8 P14 MICROSD
+  ( 1 +5V )
+  ( 2 ? )
+  ( 3 GND )
+  ( 4 /DIG52 )
+  ( 5 /DIG50 )
+  ( 6 /DIG51 )
+  ( 7 /DIG23 )
+  ( 8 ? )
+ )
+ ( /50CE40E0 PIN_ARRAY_2X1 P15 GO_SW
+  ( 1 GND )
+  ( 2 DIG40 )
+ )
+ ( /50CAA23D TO92-EBC Q1 BC237
+  ( B N-000050 )
+  ( C +24V )
+  ( E N-000051 )
+ )
+ ( /50CA35CE TO92-EBC Q2 BC237
+  ( B N-000053 )
+  ( C +24V )
+  ( E N-000054 )
+ )
+ ( /50CAA29E TO92-EBC Q3 BC237
+  ( B N-000048 )
+  ( C +24V )
+  ( E N-000049 )
+ )
+ ( /50CAA2BE TO92-EBC Q4 BC237
+  ( B N-000078 )
+  ( C +24V )
+  ( E N-000079 )
+ )
+ ( /50CA368A SM0805 R1 1k
+  ( 1 DIG30 )
+  ( 2 +5V )
+ )
+ ( /50CA368C SM0805 R2 1k
+  ( 1 DIG28 )
+  ( 2 +5V )
+ )
+ ( /50CAA23C SM0805 R3 1.5k
+  ( 1 DIG38 )
+  ( 2 N-000052 )
+ )
+ ( /50CA368D SM0805 R4 1k
+  ( 1 DIG26 )
+  ( 2 +5V )
+ )
+ ( /50CA368F SM0805 R5 1k
+  ( 1 DIG24 )
+  ( 2 +5V )
+ )
+ ( /50CAA23B SM0805 R6 470
+  ( 1 N-000050 )
+  ( 2 N-000051 )
+ )
+ ( /50CA366F SM0805 R7 1.5k
+  ( 1 DIG36 )
+  ( 2 N-000055 )
+ )
+ ( /50CA3672 SM0805 R8 470
+  ( 1 N-000053 )
+  ( 2 N-000054 )
+ )
+ ( /50CCBF35 SM0805 R9 560
+  ( 1 N-000030 )
+  ( 2 N-000083 )
+ )
+ ( /50CCBF47 SM0805 R10 160
+  ( 1 N-000029 )
+  ( 2 N-000083 )
+ )
+ ( /50CCBF51 SM0805 R11 560
+  ( 1 N-000028 )
+  ( 2 GND )
+ )
+ ( /50CAA29F SM0805 R12 1.5k
+  ( 1 DIG34 )
+  ( 2 N-000076 )
+ )
+ ( /50CAA2A0 SM0805 R13 470
+  ( 1 N-000048 )
+  ( 2 N-000049 )
+ )
+ ( /50CAA2BD SM0805 R14 1.5k
+  ( 1 DIG32 )
+  ( 2 N-000077 )
+ )
+ ( /50CAA2BC SM0805 R15 470
+  ( 1 N-000078 )
+  ( 2 N-000079 )
+ )
+ ( /50CDE72E SM0805 R16 330
+  ( 1 PWM8 )
+  ( 2 N-000086 )
+ )
+ ( /50CDE739 SM0805 R17 330
+  ( 1 PWM9 )
+  ( 2 N-000091 )
+ )
+ ( /50CDE741 SM0805 R18 330
+  ( 1 PWM10 )
+  ( 2 N-000085 )
+ )
+ ( /50CCD83C SW_PUSH_SMALL SW1 Reset
+  ( 1 GND )
+  ( 2 RST )
+ )
+ ( /50CAA2BB DIP-16__300 U1 CNY74-4H
+  ( 1 N-000052 )
+  ( 2 GND )
+  ( 3 GND )
+  ( 4 N-000055 )
+  ( 5 N-000076 )
+  ( 6 GND )
+  ( 7 GND )
+  ( 8 N-000077 )
+  ( 9 N-000078 )
+  ( 10 +24V )
+  ( 11 +24V )
+  ( 12 N-000048 )
+  ( 13 N-000053 )
+  ( 14 +24V )
+  ( 15 +24V )
+  ( 16 N-000050 )
+ )
+ ( /50CBEEC2 SO8E U2 SN75176A
+  ( 1 RX1_D19 )
+  ( 2 DIG22 )
+  ( 3 DIG22 )
+  ( 4 TX1_D18 )
+  ( 5 GND )
+  ( 6 N-000083 )
+  ( 7 N-000024 )
+  ( 8 +5V )
+ )
+)
+*
+{ Allowed footprints by component:
+$component Q1
+ TO92-EBC
+$endlist
+$component Q2
+ TO92-EBC
+$endlist
+$component Q3
+ TO92-EBC
+$endlist
+$component Q4
+ TO92-EBC
+$endlist
+$component R1
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R2
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R3
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R4
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R5
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R6
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R7
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R8
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R9
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R10
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R11
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R12
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R13
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R14
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R15
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R16
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R17
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R18
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$endfootprintlist
+}
