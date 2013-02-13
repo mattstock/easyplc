@@ -19,8 +19,11 @@
     <string name="program_list_label"><u>Program Listing</u></string>
     <string name="relay_air_label">Air</string>
     <string name="relay_mold_label">Mold</string>
+    <string name="init_label">Init</string>
+    <string name="download_label">DL</string>
+    <string name="home_label">Home</string>
+    <string name="reset_label">Reset</string>
     <string name="program_add">Add</string>
-    <string name="program_edit">Edit</string>
     <string name="program_copy">Copy</string>
     <string name="program_delete">Delete</string>
     <string name="about">About</string>

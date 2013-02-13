@@ -158,9 +158,19 @@
         android:layout_marginTop="30dp"
         android:layout_toRightOf="@+id/store_move"
         android:onClick="onClick"
-        android:text="Init" />
+        android:text="@string/init_label" />
 
- 	<Button
+    <Button
+        android:id="@+id/download"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_below="@+id/zneg"
+        android:layout_marginTop="30dp"
+        android:layout_toRightOf="@+id/init"
+        android:onClick="onClick"
+        android:text="@string/download_label" />
+
+    <Button
         android:id="@+id/home"
         android:layout_width="75dp"
         android:layout_height="75dp"
@@ -168,8 +178,8 @@
         android:layout_marginTop="30dp"
         android:layout_toLeftOf="@+id/store_move"
         android:onClick="onClick"
-        android:text="Home" />
-    
+        android:text="@string/home_label" />
+
     <Button
         android:id="@+id/reset"
         android:layout_width="75dp"
@@ -178,9 +188,9 @@
         android:layout_marginTop="30dp"
         android:layout_toRightOf="@+id/relay_air"
         android:onClick="onClick"
-        android:text="Reset" />
+        android:text="@string/reset_label" />
 
-    	<Button
+    <Button
         android:id="@+id/store_move"
         android:layout_width="75dp"
         android:layout_height="75dp"
@@ -189,7 +199,7 @@
         android:layout_toRightOf="@+id/relay_air"
         android:onClick="onClick"
         android:text="@string/store_move" />
-    
+
     <ToggleButton
         android:id="@+id/relay_mold"
         android:layout_width="75dp"

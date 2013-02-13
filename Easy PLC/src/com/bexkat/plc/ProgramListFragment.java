@@ -19,7 +19,7 @@ import com.actionbarsherlock.view.MenuItem;
 
 public class ProgramListFragment extends SherlockListFragment {
 	private static final int PROGRAM_ADD = 1;
-	private static final int PROGRAM_EDIT = 2;
+	private static final int PROGRAM_VIEW = 2;
 	private ArrayAdapter<Program> mAdapter;
 	private ProgramTable mProgramDB;
 	private Program selectedProgram;
@@ -44,13 +44,6 @@ public class ProgramListFragment extends SherlockListFragment {
 				mProgramDB.deleteProgram(selectedProgram);
 				mAdapter.remove(selectedProgram);
 				mAdapter.notifyDataSetChanged();
-				mode.finish();
-				return true;
-			}
-			if (item.getItemId() == R.id.menu_program_edit) {
-				Intent intent = new Intent(getActivity(), ProgramActivity.class);
-				intent.putExtra("com.bexkat.plc.ProgramID", selectedProgram.getId());
-				startActivityForResult(intent, PROGRAM_EDIT);
 				mode.finish();
 				return true;
 			}
@@ -118,7 +111,9 @@ public class ProgramListFragment extends SherlockListFragment {
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-		// TODO
+		Intent intent = new Intent(getActivity(), ProgramActivity.class);
+		intent.putExtra("com.bexkat.plc.ProgramID", ((Program) l.getItemAtPosition(position)).getId());
+		startActivityForResult(intent, PROGRAM_VIEW);
 	}
 
 	@Override
@@ -153,7 +148,7 @@ public class ProgramListFragment extends SherlockListFragment {
 				mAdapter.notifyDataSetChanged();
 			}
 		}
-		if (requestCode == PROGRAM_EDIT) {
+		if (requestCode == PROGRAM_VIEW) {
 			if (resultCode == Activity.RESULT_OK) {
 				long programId = data.getLongExtra(
 						"com.bexkat.plc.ProgramID", 0);

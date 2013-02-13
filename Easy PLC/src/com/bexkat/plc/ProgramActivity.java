@@ -187,6 +187,9 @@ public class ProgramActivity extends SherlockListActivity {
 		case R.id.reset:
 			plc.reset();
 			break;
+		case R.id.download:
+			plc.download(ByteCompiler.compile(mProgramDB.getAllCommands(program)));
+			break;
 		case R.id.xpos:
 			// TODO need variable increments
 			x += STEPVAL;

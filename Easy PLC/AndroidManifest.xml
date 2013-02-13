@@ -35,7 +35,7 @@
                 android:value=".BaseActivity" />
         </activity>
         <activity
-            android:name=".USBAccessoryActivity" >
+            android:name=".USBAccessory.USBAccessoryActivity" >
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
             </intent-filter>

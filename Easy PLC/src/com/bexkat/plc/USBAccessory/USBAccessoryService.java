@@ -103,6 +103,11 @@ public class USBAccessoryService extends Service {
 		queue.add(new AccessoryCommand(AccessoryCommandType.ALARM_RESET));
 	}
 
+	public void download(List<MoveResult> data) {
+		startMessenger();
+		queue.add(new AccessoryCommand(AccessoryCommandType.DOWNLOAD, data));
+	}
+
 	public void relay(byte cmd) {
 		startMessenger();
 		queue.add(new AccessoryCommand(AccessoryCommandType.RELAY, cmd));
@@ -111,11 +116,6 @@ public class USBAccessoryService extends Service {
 	public void move(List<MoveResult> data) {
 		startMessenger();
 		queue.add(new AccessoryCommand(AccessoryCommandType.MOVE, data));
-	}
-
-	public void download(List<MoveResult> data) {
-		startMessenger();
-		// TODO
 	}
 
 	private class UsbReceiver extends BroadcastReceiver {
@@ -169,9 +169,18 @@ public class USBAccessoryService extends Service {
 					if (res < 0)
 						break;
 					index = index + res;
-					if (index == 5) {
-						publishProgress(new AccessoryResult(buffer));
+					Log.d(TAG, String.format("message type %d count %d index %d", buffer[0], res, index));
+					switch (buffer[0]) {
+					case 0: // MSG_POSITION
+						if (index == 6) {
+							publishProgress(new AccessoryResult(buffer));
+							index = 0;
+						}
+						break;
+					default: // invalid message type
+						Log.d(TAG, "Invalid message type from accessory!");
 						index = 0;
+						break;
 					}
 				}
 			} catch (IOException e) {
@@ -207,8 +216,7 @@ public class USBAccessoryService extends Service {
 		}
 	}
 
-	// This thread pulls messages off the the send queue, and based on the
-	// type, waits for a response in a synchronous manner.
+	// This thread pulls messages off the the send queue.
 	protected class WriterTask extends
 			AsyncTask<FileOutputStream, AccessoryResult, Void> {
 		private FileOutputStream os;
@@ -217,6 +225,9 @@ public class USBAccessoryService extends Service {
 		protected Void doInBackground(FileOutputStream... params) {
 			int res = 0;
 			FileOutputStream os = params[0];
+			int bytecount;
+			final byte sz[] = new byte[2];
+			
 			try {
 				Log.d(TAG, "Starting write loop");
 				while (!isCancelled()) {
@@ -248,6 +259,21 @@ public class USBAccessoryService extends Service {
 					case MOVE:
 						for (byte s : cmd.getData()) {
 							os.write('c');
+							os.write(s);
+						}
+						break;
+					case DOWNLOAD:
+						bytecount = cmd.getData().length;
+						Log.d(TAG, "download starting");
+						if (bytecount < 1)
+							break;
+						sz[0] = (byte) (0xff & (bytecount >> 8));
+						sz[1] = (byte) (0xff & bytecount);
+						Log.d(TAG, String.format("size = %d bytes %x %x", bytecount, sz[0], sz[1]));
+						os.write('d');
+						os.write(sz[0]);
+						os.write(sz[1]);
+						for (byte s : cmd.getData()) {
 							os.write(s);
 						}
 						break;
