@@ -11,7 +11,7 @@
 #include "modbus.h"
 #include "relays.h"
 
-boolean sdready, isexecute, y_online, z_online;
+boolean sdready, isexecute, x_online, y_online, z_online;
 const uint8_t MSG_POSITION = 0x00;
 
 void runState() {

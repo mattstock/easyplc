@@ -56,14 +56,15 @@ void setup() {
 	// Pay attention to USB events.
 	acc.powerOn();
 
+	x_online = true;
+	y_online = true;
+	z_online = true;
+
 	enableSerial();
-	clearDrive();
 	state = STATE_CMD_INIT;
 	state_prev = STATE_READY;
 	sdready = false;
 	isexecute = false;
-	y_online = true;
-	z_online = false;
 }
 
 void loop() {
@@ -77,8 +78,21 @@ void loop() {
 		timein_state = millis();
 	}
 
-	if (checkAlarm(active_node)) {
-		printAlarm(active_node);
+	if (x_online && checkAlarm(nodex)) {
+		Serial.print("X ");
+		printAlarm(nodex);
+		state = STATE_CMD_ALARM_RESET;
+	}
+
+	if (y_online && checkAlarm(nodey)) {
+		Serial.print("Y ");
+		printAlarm(nodey);
+		state = STATE_CMD_ALARM_RESET;
+	}
+
+	if (z_online && checkAlarm(nodez)) {
+		Serial.print("Z ");
+		printAlarm(nodez);
 		state = STATE_CMD_ALARM_RESET;
 	}
 

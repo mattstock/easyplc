@@ -8,7 +8,7 @@
 #ifndef STATES_H_
 #define STATES_H_
 
-extern boolean sdready, isexecute, y_online, z_online;
+extern boolean sdready, isexecute, x_online, y_online, z_online;
 
 enum states {
   STATE_READY = 0,
