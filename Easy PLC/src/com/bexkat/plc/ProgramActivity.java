@@ -24,12 +24,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 import android.widget.AdapterView.OnItemLongClickListener;
 
 public class ProgramActivity extends SherlockListActivity {
-	private static final float STEPVAL = 5.0f;
+	private float STEPVAL = 1.0f;
 	private USBAccessoryService plc;
 	private ServiceConnection connection = new PLCServiceConnection();
 	private ProgramTable mProgramDB;
@@ -38,7 +39,7 @@ public class ProgramActivity extends SherlockListActivity {
 	private Program program;
 	private ActionMode mActionMode;
 	private long progid;
-	private float x,y,z = 0;
+	private float x, y, z = 0;
 	private BroadcastReceiver intentReceiver;
 	private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
 
@@ -72,13 +73,13 @@ public class ProgramActivity extends SherlockListActivity {
 			mActionMode = null;
 		}
 	};
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.program);
-		
+
 		getListView().setOnItemLongClickListener(new OnItemLongClickListener() {
 
 			@Override
@@ -96,10 +97,11 @@ public class ProgramActivity extends SherlockListActivity {
 
 		mProgramDB = new ProgramTable(this);
 		mProgramDB.open();
-		
+
 		// Grab program we're working on
 		Intent intent = getIntent();
-		// Make sure we return the program id value so it's added to the program list
+		// Make sure we return the program id value so it's added to the program
+		// list
 		setResult(Activity.RESULT_OK, intent);
 		progid = intent.getLongExtra("com.bexkat.plc.ProgramID", -1);
 		if (progid == -1)
@@ -110,34 +112,37 @@ public class ProgramActivity extends SherlockListActivity {
 		mAdapter = new ArrayAdapter<Command>(this,
 				android.R.layout.simple_list_item_1, commands);
 		setListAdapter(mAdapter);
-		bindService(new Intent(getApplicationContext(), USBAccessoryService.class), connection,
+		bindService(new Intent(getApplicationContext(),
+				USBAccessoryService.class), connection,
 				Context.BIND_AUTO_CREATE);
 	}
-	
-    @Override
-    protected void onResume() {
-        super.onResume();
-        
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
 		mProgramDB.open();
 		program = mProgramDB.getProgram(progid);
-		
+
 		IntentFilter updateFilter = new IntentFilter();
 		updateFilter.addAction(USBAccessoryService.POSITION_INTENT);
 		intentReceiver = new AccessoryServiceReceiver();
 		registerReceiver(intentReceiver, updateFilter);
-		
+
 		// Bunch of UI updates
 		EditText v = (EditText) findViewById(R.id.program_name);
 		v.setText(program.getName());
 		v = (EditText) findViewById(R.id.program_description);
-		v.setText(program.getDescription());	
-		v = (EditText) findViewById(R.id.x_position);
-		v.setText(Float.toString(x));
-        v = (EditText) findViewById(R.id.y_position);
-		v.setText(Float.toString(y));
-        v = (EditText) findViewById(R.id.z_position);
-		v.setText(Float.toString(z));
-    }
+		v.setText(program.getDescription());
+		update_position();
+	}
+
+	private void update_position() {
+		TextView v;
+
+		v = (TextView) findViewById(R.id.current_position);
+		v.setText(String.format("(%.3f, %.3f, %.3f)", x, y, z));
+	}
 
 	@Override
 	protected void onPause() {
@@ -145,12 +150,12 @@ public class ProgramActivity extends SherlockListActivity {
 		TextView v = (TextView) findViewById(R.id.program_name);
 		program.setName(v.getText().toString());
 		mProgramDB.modifyName(program);
-		v = (TextView) findViewById(R.id.program_description);		
+		v = (TextView) findViewById(R.id.program_description);
 		program.setDescription(v.getText().toString());
 		mProgramDB.modifyDescription(program);
-		
+
 		unregisterReceiver(intentReceiver);
-		
+
 		mProgramDB.close();
 
 		super.onPause();
@@ -172,26 +177,32 @@ public class ProgramActivity extends SherlockListActivity {
 			plc = null;
 		}
 	}
-	
+
 	public void onClick(View v) {
-		TextView tv;
 		Command cmd;
-		
+
 		switch (v.getId()) {
-		case R.id.home:
-			plc.home();
-			break;
-		case R.id.init:
-			plc.init();
-			break;
-		case R.id.reset:
-			plc.reset();
-			break;
 		case R.id.download:
-			plc.download(ByteCompiler.compile(mProgramDB.getAllCommands(program)));
+			plc.download(ByteCompiler.compile(mProgramDB
+					.getAllCommands(program)));
+			break;
+		case R.id.step_tenth_mm:
+			if (((RadioButton) findViewById(R.id.step_tenth_mm)).isChecked())
+				STEPVAL = 0.1f;
+			break;
+		case R.id.step_one_mm:
+			if (((RadioButton) findViewById(R.id.step_one_mm)).isChecked())
+				STEPVAL = 1.0f;
+			break;
+		case R.id.step_five_mm:
+			if (((RadioButton) findViewById(R.id.step_five_mm)).isChecked())
+				STEPVAL = 5.0f;
+			break;
+		case R.id.step_ten_mm:
+			if (((RadioButton) findViewById(R.id.step_ten_mm)).isChecked())
+				STEPVAL = 10.0f;
 			break;
 		case R.id.xpos:
-			// TODO need variable increments
 			x += STEPVAL;
 			plc.move(ByteCompiler.moveStep(ByteCompiler.MASK_X, STEPVAL));
 			break;
@@ -218,61 +229,60 @@ public class ProgramActivity extends SherlockListActivity {
 		case R.id.test_program:
 			plc.move(ByteCompiler.compile(mProgramDB.getAllCommands(program)));
 			break;
-		case R.id.store_move:
+		case R.id.teach:
 			cmd = mProgramDB.addCommand(program, Command.TYPE_POS, x, y, z);
 			mAdapter.add(cmd);
-			mAdapter.notifyDataSetChanged(); 
+			mAdapter.notifyDataSetChanged();
 			break;
 		case R.id.relay_air:
 			if (((ToggleButton) findViewById(R.id.relay_air)).isChecked()) {
-				plc.relay(ByteCompiler.relayByte(1, Command.RELAY_AIR));				
-				cmd = mProgramDB.addCommand(program, Command.TYPE_RELAY, 1, Command.RELAY_AIR);
+				plc.relay(ByteCompiler.relayByte(1, Command.RELAY_AIR));
+				cmd = mProgramDB.addCommand(program, Command.TYPE_RELAY, 1,
+						Command.RELAY_AIR);
 			} else {
-				plc.relay(ByteCompiler.relayByte(0, Command.RELAY_AIR));				
-				cmd = mProgramDB.addCommand(program, Command.TYPE_RELAY, 0, Command.RELAY_AIR);
+				plc.relay(ByteCompiler.relayByte(0, Command.RELAY_AIR));
+				cmd = mProgramDB.addCommand(program, Command.TYPE_RELAY, 0,
+						Command.RELAY_AIR);
 			}
 			mAdapter.add(cmd);
-			mAdapter.notifyDataSetChanged();			
+			mAdapter.notifyDataSetChanged();
 			break;
 		case R.id.relay_mold:
 			if (((ToggleButton) findViewById(R.id.relay_mold)).isChecked()) {
-				plc.relay(ByteCompiler.relayByte(1, Command.RELAY_MOULD));				
-				cmd = mProgramDB.addCommand(program, Command.TYPE_RELAY, 1, Command.RELAY_MOULD);
+				plc.relay(ByteCompiler.relayByte(1, Command.RELAY_MOULD));
+				cmd = mProgramDB.addCommand(program, Command.TYPE_RELAY, 1,
+						Command.RELAY_MOULD);
 			} else {
-				plc.relay(ByteCompiler.relayByte(0, Command.RELAY_MOULD));				
-				cmd = mProgramDB.addCommand(program, Command.TYPE_RELAY, 0, Command.RELAY_MOULD);
+				plc.relay(ByteCompiler.relayByte(0, Command.RELAY_MOULD));
+				cmd = mProgramDB.addCommand(program, Command.TYPE_RELAY, 0,
+						Command.RELAY_MOULD);
 			}
 			mAdapter.add(cmd);
-			mAdapter.notifyDataSetChanged();			
+			mAdapter.notifyDataSetChanged();
 			break;
 		}
 	}
-	
+
 	private class AccessoryServiceReceiver extends BroadcastReceiver {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			EditText v;
-			
 			Bundle b = intent.getExtras();
 			String action = intent.getAction();
-			
+
 			if (action.equals(USBAccessoryService.POSITION_INTENT)) {
 				switch (b.getInt("axis")) {
 				case 0:
 					x = b.getInt("position") / 100.0f;
-					v = (EditText) findViewById(R.id.x_position);
-					v.setText(Float.toString(x));
+					update_position();
 					break;
 				case 1:
 					y = b.getInt("position") / 100.0f;
-					v = (EditText) findViewById(R.id.y_position);
-					v.setText(Float.toString(y));
+					update_position();
 					break;
 				case 2:
 					z = b.getInt("position") / 100.0f;
-					v = (EditText) findViewById(R.id.z_position);
-					v.setText(Float.toString(z));
+					update_position();
 					break;
 				default:
 					// TODO - add relay support

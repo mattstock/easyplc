@@ -14,7 +14,7 @@
     <string name="x_label">X: </string>
     <string name="y_label">Y: </string>
     <string name="z_label">Z: </string>
-    <string name="store_move">Store</string>
+    <string name="teach">Teach</string>
     <string name="test_program">Test</string>
     <string name="program_list_label"><u>Program Listing</u></string>
     <string name="relay_air_label">Air</string>
@@ -27,4 +27,8 @@
     <string name="program_copy">Copy</string>
     <string name="program_delete">Delete</string>
     <string name="about">About</string>
+    <string name="step_tenth_mm">0.1mm</string>
+    <string name="step_one_mm">1mm</string>
+    <string name="step_five_mm">5mm</string>
+    <string name="step_ten_mm">10mm</string>
 </resources>

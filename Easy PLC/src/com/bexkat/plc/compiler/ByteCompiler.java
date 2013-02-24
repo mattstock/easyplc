@@ -17,7 +17,7 @@ public class ByteCompiler {
 	private static final float[] STEPS = { 
 		0, 50, -0.5f, -1, -2, -3, -5, -7,
 		-10, -20, 0.5f, 1, 2, 3, 5, 7,
-		10, 20 };
+		10, 20, 0.1f, -0.1f, 50, -50 };
 	
 	public static List<MoveResult> compile(List<Command> cmds) {
 		ArrayList<MoveResult> stepSeq = new ArrayList<MoveResult>();

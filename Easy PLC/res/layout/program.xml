@@ -56,156 +56,111 @@
         android:text="@string/position_entry_label"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <Button
-        android:id="@+id/xneg"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
+    <ImageButton
+        android:id="@+id/ypos"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignLeft="@+id/current_position"
         android:layout_below="@+id/position_entry_label"
         android:onClick="onClick"
-        android:text="@string/xneg" />
-
-    <Button
-        android:id="@+id/xpos"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_alignTop="@+id/xneg"
-        android:layout_toRightOf="@+id/xneg"
-        android:onClick="onClick"
-        android:text="@string/xpos" />
-
-    <EditText
-        android:id="@+id/x_position"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/xpos"
-        android:layout_toRightOf="@+id/xpos"
-        android:ems="5"
-        android:inputType="numberDecimal" >
-    </EditText>
-
-    <Button
-        android:id="@+id/yneg"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_alignLeft="@+id/xneg"
-        android:layout_below="@+id/xneg"
-        android:onClick="onClick"
-        android:text="@string/yneg" />
-
-    <Button
-        android:id="@+id/ypos"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_alignTop="@+id/yneg"
-        android:layout_toRightOf="@+id/yneg"
-        android:onClick="onClick"
+        android:src="@drawable/ypos"
         android:text="@string/ypos" />
 
-    <EditText
-        android:id="@+id/y_position"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/ypos"
-        android:layout_toRightOf="@+id/ypos"
-        android:ems="5"
-        android:inputType="numberDecimal" >
-    </EditText>
-
-    <Button
-        android:id="@+id/zneg"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_alignLeft="@+id/xneg"
-        android:layout_below="@+id/yneg"
+    <ImageButton
+        android:id="@+id/xneg"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_below="@+id/ypos"
         android:onClick="onClick"
-        android:text="@string/zneg" />
+        android:src="@drawable/xneg"
+        android:text="@string/xneg" />
 
-    <Button
+    <TextView
+        android:id="@+id/current_position"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_below="@+id/ypos"
+        android:layout_toRightOf="@+id/xneg"
+        android:paddingLeft="5dp"
+        android:paddingTop="25dp"
+        android:text="(0,0,0)"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <ImageButton
+        android:id="@+id/xpos"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignTop="@+id/xneg"
+        android:layout_toRightOf="@+id/current_position"
+        android:onClick="onClick"
+        android:src="@drawable/xpos"
+        android:text="@string/xpos" />
+
+    <ImageButton
+        android:id="@+id/yneg"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignLeft="@+id/ypos"
+        android:layout_below="@+id/current_position"
+        android:onClick="onClick"
+        android:src="@drawable/yneg"
+        android:text="@string/yneg" />
+
+    <ImageButton
         android:id="@+id/zpos"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_alignTop="@+id/zneg"
-        android:layout_toRightOf="@+id/zneg"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignTop="@+id/ypos"
+        android:layout_toRightOf="@+id/xpos"
         android:onClick="onClick"
+        android:src="@drawable/zpos"
         android:text="@string/zpos" />
 
-    <EditText
-        android:id="@+id/z_position"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/zpos"
-        android:layout_toRightOf="@+id/zpos"
-        android:ems="5"
-        android:inputType="numberDecimal" >
-    </EditText>
+    <ImageButton
+        android:id="@+id/zneg"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignLeft="@+id/zpos"
+        android:layout_alignTop="@+id/yneg"
+        android:onClick="onClick"
+        android:src="@drawable/zneg"
+        android:text="@string/zneg" />
 
     <ToggleButton
         android:id="@+id/relay_air"
         android:layout_width="75dp"
         android:layout_height="75dp"
         android:layout_alignLeft="@+id/xneg"
-        android:layout_below="@+id/store_move"
+        android:layout_below="@+id/yneg"
         android:layout_marginTop="30dp"
         android:onClick="onClick"
         android:textOff="@string/relay_air_label"
         android:textOn="@string/relay_air_label" />
 
     <Button
-        android:id="@+id/init"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_below="@+id/zneg"
-        android:layout_marginTop="30dp"
-        android:layout_toRightOf="@+id/store_move"
-        android:onClick="onClick"
-        android:text="@string/init_label" />
-
-    <Button
         android:id="@+id/download"
         android:layout_width="75dp"
         android:layout_height="75dp"
-        android:layout_below="@+id/zneg"
-        android:layout_marginTop="30dp"
-        android:layout_toRightOf="@+id/init"
+        android:layout_alignTop="@+id/relay_air"
+        android:layout_toRightOf="@+id/relay_air"
         android:onClick="onClick"
         android:text="@string/download_label" />
 
     <Button
-        android:id="@+id/home"
+        android:id="@+id/teach"
         android:layout_width="75dp"
         android:layout_height="75dp"
-        android:layout_below="@+id/zneg"
-        android:layout_marginTop="30dp"
-        android:layout_toLeftOf="@+id/store_move"
+        android:layout_alignTop="@+id/relay_air"
+        android:layout_toRightOf="@+id/download"
         android:onClick="onClick"
-        android:text="@string/home_label" />
-
-    <Button
-        android:id="@+id/reset"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_below="@+id/store_move"
-        android:layout_marginTop="30dp"
-        android:layout_toRightOf="@+id/relay_air"
-        android:onClick="onClick"
-        android:text="@string/reset_label" />
-
-    <Button
-        android:id="@+id/store_move"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_below="@+id/zneg"
-        android:layout_marginTop="30dp"
-        android:layout_toRightOf="@+id/relay_air"
-        android:onClick="onClick"
-        android:text="@string/store_move" />
+        android:text="@string/teach" />
 
     <ToggleButton
         android:id="@+id/relay_mold"
         android:layout_width="75dp"
         android:layout_height="75dp"
         android:layout_alignTop="@+id/relay_air"
-        android:layout_toRightOf="@+id/store_move"
+        android:layout_toRightOf="@+id/teach"
         android:onClick="onClick"
         android:textOff="@string/relay_mold_label"
         android:textOn="@string/relay_mold_label" />
@@ -225,25 +180,63 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/position_entry_label"
-        android:layout_marginLeft="100dp"
+        android:layout_marginLeft="400dp"
         android:layout_toRightOf="@+id/position_entry_label"
         android:text="@string/program_list_label"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <ListView
         android:id="@android:id/list"
-        android:layout_width="600dp"
+        android:layout_width="500dp"
         android:layout_height="300dp"
         android:layout_alignLeft="@+id/program_list_label"
-        android:layout_alignTop="@+id/xpos"
+        android:layout_alignTop="@+id/ypos"
         tools:layout="@layout/simple_list_item_1" />
 
     <TextView
         android:id="@android:id/empty"
-        android:layout_width="600dp"
+        android:layout_width="500dp"
         android:layout_height="300dp"
         android:layout_alignLeft="@+id/program_list_label"
-        android:layout_alignTop="@+id/xpos"
+        android:layout_alignTop="@+id/ypos"
         android:text="No commands" />
+
+    <RadioGroup
+        android:id="@+id/step_rate"
+        android:layout_width="100dp"
+        android:layout_height="150dp"
+        android:layout_alignTop="@+id/zpos"
+        android:layout_marginLeft="20dp"
+        android:layout_toRightOf="@+id/zpos" >
+
+        <RadioButton
+            android:id="@+id/step_tenth_mm"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="@string/step_tenth_mm" />
+
+        <RadioButton
+            android:id="@+id/step_one_mm"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:onClick="onClick"
+            android:text="@string/step_one_mm" />
+
+        <RadioButton
+            android:id="@+id/step_five_mm"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="@string/step_five_mm" />
+
+        <RadioButton
+            android:id="@+id/step_ten_mm"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="@string/step_ten_mm" />
+    </RadioGroup>
 
 </RelativeLayout>
