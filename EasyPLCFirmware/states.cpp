@@ -198,6 +198,7 @@ void runState() {
 		if (checkBusy(active_node))
 			break;
 		state = STATE_READY;
+		break;
 	case STATE_RELAY_COMMAND:
 		relayCommand();
 		break;
